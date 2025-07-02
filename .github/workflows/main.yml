@@ -23,24 +23,30 @@ jobs:
         python -m pip install --upgrade pip
         pip install numpy matplotlib scipy pandas numba tqdm
         
-    - name: Test SIMBA functionality on Windows
+    - name: Test SIMBA complete workflow on Windows
       run: |
         python -c "
         import sys; sys.path.insert(0, '.')
-        import simba_chem.core as core
-        import simba_chem.calculus as calc
-        import simba_chem.helpers as helpers
-        import numpy as np
-        print('Testing basic functionality...')
-        
-        # Test some basic operations
-        test_array = np.array([1, 2, 3, 4, 5])
-        print('Numpy operations work:', np.sum(test_array))
-        
-        # Test file path operations (Windows uses backslashes)
+        import simba_chem as simba
         import os
-        print('Current working directory:', os.getcwd())
-        print('Package directory contents:', os.listdir('simba_chem'))
         
-        print('All basic functionality tests passed on Windows!')
+        print('Testing complete SIMBA workflow on Windows...')
+        print('Available test files:', os.listdir('tests'))
+        
+        # Test the typical usage pattern with correct paths
+        print('Step 1: Creating input file...')
+        simba.create_input('tests/input_file.dat')
+        print('Input file created successfully')
+        
+        print('Step 2: Initializing SIMBA network...')
+        network = simba.Simba()
+        network.init_simba('tests/input_file.dat')
+        print('Network initialized successfully')
+        
+        print('Step 3: Solving network...')
+        result = network.solve_network()
+        print('Network solved successfully!')
+        print('Result type:', type(result))
+        
+        print('COMPLETE SIMBA WORKFLOW WORKS ON WINDOWS!')
         "
