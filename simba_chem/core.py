@@ -34,6 +34,7 @@ from contextlib import contextmanager
 import logging
 import sys
 import os
+import platform
 from . import helpers
 from . import model_classes
 from . import calculus
