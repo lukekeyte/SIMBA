@@ -35,9 +35,24 @@ except ImportError:
 
 
 def safe_log(message):
-    """Safe logging that never fails on Windows"""
+    """Safe logging with prettier ASCII replacements on Windows"""
     if platform.system() == 'Windows':
-        # On Windows, convert to ASCII and just print
+        # Replace common Unicode with ASCII equivalents for cleaner Windows output
+        replacements = {
+            '┏': '+', '┓': '+', '┗': '+', '┛': '+',
+            '┃': '|', '━': '-', '▓': '#', '◆': '*', '►': '>',
+            '┌': '+', '┐': '+', '└': '+', '┘': '+',
+            '│': '|', '─': '-', '├': '+', '┤': '+', 
+            '┬': '+', '┴': '+', '┼': '+',
+            '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5',
+            '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁰': '0',
+            '⁻': '-', '×': 'x'
+        }
+        
+        for unicode_char, ascii_char in replacements.items():
+            message = message.replace(unicode_char, ascii_char)
+        
+        # Handle any remaining Unicode
         safe_message = message.encode('ascii', 'replace').decode('ascii')
         print(safe_message)
     else:
