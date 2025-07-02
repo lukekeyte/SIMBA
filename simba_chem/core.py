@@ -46,12 +46,21 @@ from .helpers import safe_exp
 
 def safe_log(message):
     """Safe logging that never fails on Windows"""
-    try:
-        logging.info(message)
-    except UnicodeEncodeError:
-        # Convert to ASCII and print directly
-        safe_message = message.encode('ascii', 'replace').decode('ascii')
-        print(safe_message)
+    if platform.system() == 'Windows':
+        # On Windows, always convert to ASCII first to avoid encoding issues
+        try:
+            safe_message = message.encode('ascii', 'replace').decode('ascii')
+            print(safe_message)
+        except:
+            # Ultimate fallback
+            print("[LOG] Message with encoding issues")
+    else:
+        # On Mac/Linux, use normal logging for beautiful Unicode output
+        try:
+            import logging
+            logging.info(message)
+        except:
+            print(message)
 
         
 
