@@ -96,7 +96,7 @@ class Simba:
         # Optionally create file handler if user wants logs saved
         if self.parameters.save_logs:
             file_handler = logging.FileHandler('simba.log')
-            file_handler.setLevel(logging.INFO)  # Could make this configurable too
+            file_handler.setLevel(safe_log)  # Could make this configurable too
             file_format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
             file_handler.setFormatter(file_format)
             logger.addHandler(file_handler)
@@ -133,19 +133,19 @@ class Simba:
     def init_simba(self, input_file):
         """Initialize the SIMBA chemical network solver"""
 
-        logging.info("\n")
-        logging.info("┏" + ("━" * 68) + "┓")
-        logging.info("┃" + "".center(68) + "┃")
-        logging.info("┃" + "┏┓┳┳┳┓┳┓┏┓".center(68) + "┃")
-        logging.info("┃" + "┗┓┃┃┃┃┣┫┣┫".center(68) + "┃")
-        logging.info("┃" + "┗┛┻┛ ┗┻┛┛┗".center(68) + "┃")
-        logging.info("┃" + "Astrochemical Network Solver".center(68) + "┃")
-        logging.info("┃" + "by Luke Keyte".center(68) + "┃")
-        logging.info("┃" + "".center(68) + "┃")
-        logging.info("┃" + "Version 1.0.2 | 2025".center(68) + "┃")
-        logging.info("┃" + "".center(68) + "┃")
-        logging.info("┗" + ("━" * 68) + "┛")
-        logging.info("\n")
+        safe_log("\n")
+        safe_log("┏" + ("━" * 68) + "┓")
+        safe_log("┃" + "".center(68) + "┃")
+        safe_log("┃" + "┏┓┳┳┳┓┳┓┏┓".center(68) + "┃")
+        safe_log("┃" + "┗┓┃┃┃┃┣┫┣┫".center(68) + "┃")
+        safe_log("┃" + "┗┛┻┛ ┗┻┛┛┗".center(68) + "┃")
+        safe_log("┃" + "Astrochemical Network Solver".center(68) + "┃")
+        safe_log("┃" + "by Luke Keyte".center(68) + "┃")
+        safe_log("┃" + "".center(68) + "┃")
+        safe_log("┃" + "Version 1.0.2 | 2025".center(68) + "┃")
+        safe_log("┃" + "".center(68) + "┃")
+        safe_log("┗" + ("━" * 68) + "┛")
+        safe_log("\n")
                                 
         
         input_data = helpers.read_input_file(input_file)
@@ -154,7 +154,7 @@ class Simba:
         # Input parameters
         helpers.log_section("INITIALIZATION")
         try:   
-            logging.info(" ◆ Loading input parameters")
+            safe_log(" ◆ Loading input parameters")
             self.gas.n_gas = input_data['n_gas']
             self.gas.t_gas = input_data['t_gas']
             self.dust.n_dust = input_data['n_dust']
@@ -172,7 +172,7 @@ class Simba:
             self.parameters.column = input_data['column']
             if self.parameters.column:
                 self.gas.h2_col = input_data['h2_col']
-            logging.info("    ► Parameters loaded successfully\n")
+            safe_log("    ► Parameters loaded successfully\n")
         except AttributeError as e:
             logging.error(f"Missing required input parameter: {str(e)}")
             raise
@@ -183,7 +183,7 @@ class Simba:
 
         # Chemical network
         try:
-            logging.info(" ◆ Loading chemical network")
+            safe_log(" ◆ Loading chemical network")
             network_data = helpers.read_chemnet(input_data['network'])
             
             self.parameters.n_elements = network_data[0]
@@ -227,10 +227,10 @@ class Simba:
             # Absolute abundances
             self.species.number = self.species.abundance * self.gas.n_gas
             
-            logging.info("    ► Network successfully loaded")
-            logging.info(f"      • {self.parameters.n_elements} elements")
-            logging.info(f"      • {self.parameters.n_species} atomic/molecular species")
-            logging.info(f"      • {self.parameters.n_reactions} reactions\n")
+            safe_log("    ► Network successfully loaded")
+            safe_log(f"      • {self.parameters.n_elements} elements")
+            safe_log(f"      • {self.parameters.n_species} atomic/molecular species")
+            safe_log(f"      • {self.parameters.n_reactions} reactions\n")
             
         except Exception as e:
             logging.error("Failed to load chemical network")
@@ -238,10 +238,10 @@ class Simba:
             
         
         # Self-shielding factors
-        logging.info(" ◆ Loading self-shielding data")
+        safe_log(" ◆ Loading self-shielding data")
         try:
             self.ss_co = ss.read_selfshielding_co(CO_SELFSHIELDING_FILE)
-            logging.info("    ► CO self-shielding: Loaded")
+            safe_log("    ► CO self-shielding: Loaded")
         except FileNotFoundError:
             logging.error("CO self-shielding data file not found: data_selfshielding_c.dat")
             raise
@@ -250,7 +250,7 @@ class Simba:
             raise
         try:
             self.ss_n2 = ss.read_selfshielding_n2(N2_SELFSHIELDING_FILE)
-            logging.info("    ► N₂ self-shielding: Loaded\n")
+            safe_log("    ► N₂ self-shielding: Loaded\n")
         except FileNotFoundError:
             logging.error("N2 self-shielding data file not found: data_selfshielding_n2.dat")
             raise
@@ -294,7 +294,7 @@ class Simba:
             helpers.log_table_row("H Column", self.gas.h2_col, "cm^-2")
         helpers.log_table_footer()
 
-        logging.info("")
+        safe_log("")
 
 
     ##########################
@@ -660,9 +660,9 @@ class Simba:
                 - `reaction_labels` (list): List of formatted strings describing each reaction.
         """
         
-        logging.info("\n")
+        safe_log("\n")
         helpers.log_section("SOLVING NETWORK")
-        logging.info(" ◆ Starting chemical network integration...")
+        safe_log(" ◆ Starting chemical network integration...")
 
         # Define solver configurations to try
         solver_configs = [
@@ -694,7 +694,7 @@ class Simba:
         
         # Try each configuration until one succeeds
         for i, config in enumerate(solver_configs):
-            logging.info(f"   (attempt {i+1}/{len(solver_configs)}: integration with {config['name']})\n")
+            safe_log(f"   (attempt {i+1}/{len(solver_configs)}: integration with {config['name']})\n")
             result = self._try_integration(config)
             
             if result.get('success', False):
@@ -819,11 +819,11 @@ class Simba:
                     self._progress_bar.close()
                     self._progress_bar = None  # Set to None to prevent any future references
 
-                logging.info(f"\n")
-                logging.info(f"   ► Integration successful!")
-                logging.info(f"     • Runtime:   {end_time - start_time:.2f} seconds")
-                logging.info(f"     • Timesteps: {len(solution.t)}")
-                logging.info(f"\n")          
+                safe_log(f"\n")
+                safe_log(f"   ► Integration successful!")
+                safe_log(f"     • Runtime:   {end_time - start_time:.2f} seconds")
+                safe_log(f"     • Timesteps: {len(solution.t)}")
+                safe_log(f"\n")          
                     
                 # Convert lists to arrays
                 all_times = np.array(self._all_times)
@@ -857,7 +857,7 @@ class Simba:
                 helpers.log_table_header_analysis(' ◆ DOMINANT REACTIONS', 'Reaction', 'Rate (cm⁻³ s⁻¹)')
                 top_idx = np.argsort(self.rate_history[-1, :])[-10:][::-1]
                 for idx in top_idx:
-                    # logging.info(f"  * {self.reactions.labels[idx]:}: {self.rate_history[:,idx][-1]:.2e} cm^-3 s^-1")
+                    # safe_log(f"  * {self.reactions.labels[idx]:}: {self.rate_history[:,idx][-1]:.2e} cm^-3 s^-1")
                     helpers.log_table_row_reactions(self.reactions.labels[idx], self.rate_history[:,idx][-1])
                 helpers.log_table_footer_analysis()
                 
@@ -867,14 +867,14 @@ class Simba:
                 mass_change    = abs((mass_f-mass_i)/ mass_i) * 100
                 mass_tolerance = 0.1  
 
-                logging.info(" ◆ CONSERVATION DIAGNOSTICS")
-                logging.info(f"   ► Mass conservation")
-                logging.info(f"      • Initial total mass : {mass_i:.3e} amu cm^-3")
-                logging.info(f"      • Final total mass   : {mass_f:.3e} amu cm^-3")
-                logging.info(f"      • Difference         : {mass_change:.1e} %")
+                safe_log(" ◆ CONSERVATION DIAGNOSTICS")
+                safe_log(f"   ► Mass conservation")
+                safe_log(f"      • Initial total mass : {mass_i:.3e} amu cm^-3")
+                safe_log(f"      • Final total mass   : {mass_f:.3e} amu cm^-3")
+                safe_log(f"      • Difference         : {mass_change:.1e} %")
                 
                 if mass_change < mass_tolerance:
-                    logging.info(f"      [OK] Mass conservation satisfied")
+                    safe_log(f"      [OK] Mass conservation satisfied")
                 else:
                     logging.warning(f"      [WARNING] Mass conservation violated")
                     logging.warning(f"      [WARNING] Difference exceeds tolerance by {mass_change/mass_tolerance:.1e}x")
@@ -885,24 +885,24 @@ class Simba:
                 charge_change    = abs(charge_f - charge_i)
                 charge_tolerance = 1e-6
 
-                logging.info(f"   ► Charge conservation")
-                logging.info(f"      • Initial total charge : {charge_i:.3e}")
-                logging.info(f"      • Final total charge   : {charge_f:.3e}")
+                safe_log(f"   ► Charge conservation")
+                safe_log(f"      • Initial total charge : {charge_i:.3e}")
+                safe_log(f"      • Final total charge   : {charge_f:.3e}")
                 
                 if charge_change < charge_tolerance:
-                    logging.info(f"      [OK] Charge conservation satisfied")
+                    safe_log(f"      [OK] Charge conservation satisfied")
                 else:
                     logging.warning(f"      [WARNING] Charge conservation violated")
                     logging.warning(f"      [WARNING] Difference exceeds charge_tolerance by {charge_change/charge_tolerance:.1e}x")
 
 
-                logging.info("\n")
-                logging.info("┏" + ("━" * 68) + "┓")
-                logging.info("┃" + "".center(68) + "┃")
-                logging.info("┃" + "Simulation Completed".center(68) + "┃")
-                logging.info("┃" + "".center(68) + "┃")
-                logging.info("┗" + ("━" * 68) + "┛")
-                logging.info("\n")
+                safe_log("\n")
+                safe_log("┏" + ("━" * 68) + "┓")
+                safe_log("┃" + "".center(68) + "┃")
+                safe_log("┃" + "Simulation Completed".center(68) + "┃")
+                safe_log("┃" + "".center(68) + "┃")
+                safe_log("┗" + ("━" * 68) + "┛")
+                safe_log("\n")
 
                 return {
                     'time': solution.t,
