@@ -23,6 +23,19 @@ Initialize a Simba object, set up the network parameters, and call solve_network
 to integrate the chemical evolution over time.
 """
 
+import platform
+import os
+
+# Force UTF-8 encoding on Windows - put this BEFORE any other imports
+if platform.system() == 'Windows':
+    import sys
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    if hasattr(sys.stderr, 'reconfigure'):  
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    # Set environment variable as backup
+    os.environ['PYTHONIOENCODING'] = 'utf-8:replace'
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
@@ -33,9 +46,7 @@ import time
 from contextlib import contextmanager
 import logging
 import sys
-import os
 import io
-import platform
 from . import helpers
 from . import model_classes
 from . import calculus
@@ -44,16 +55,6 @@ from .data import CO_SELFSHIELDING_FILE, N2_SELFSHIELDING_FILE
 from .helpers import safe_exp
 
 
-
-if platform.system() == 'Windows':
-    if hasattr(sys.stderr, 'buffer'):
-        sys.stderr = io.TextIOWrapper(
-            sys.stderr.buffer, 
-            encoding='utf-8', 
-            errors='replace',
-            newline=None,
-            line_buffering=True
-        )
 
 
 class Simba:
