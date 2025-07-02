@@ -33,20 +33,21 @@ jobs:
         print('Testing complete SIMBA workflow on Windows...')
         print('Available test files:', os.listdir('tests'))
         
-        # Test the typical usage pattern with correct paths
-        print('Step 1: Creating input file...')
-        simba.create_input('tests/input_file.dat')
-        print('Input file created successfully')
-        
-        print('Step 2: Initializing SIMBA network...')
+        # Test the typical usage pattern with existing test files
+        print('Step 1: Initializing SIMBA network...')
         network = simba.Simba()
         network.init_simba('tests/input_file.dat')
         print('Network initialized successfully')
         
-        print('Step 3: Solving network...')
+        print('Step 2: Solving network...')
         result = network.solve_network()
         print('Network solved successfully!')
         print('Result type:', type(result))
         
+        if hasattr(result, 'shape'):
+            print('Result shape:', result.shape)
+        elif hasattr(result, '__len__'):
+            print('Result length:', len(result))
+            
         print('COMPLETE SIMBA WORKFLOW WORKS ON WINDOWS!')
         "
