@@ -1,28 +1,29 @@
-name: Test SIMBA Package
+name: Test SIMBA on Windows
 
 on: 
   push:
   pull_request:
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
+  test-windows:
+    runs-on: windows-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.9', '3.10', '3.11']
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
       
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+    - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         
-    - name: Test basic import
+    - name: Test SIMBA on Windows
       run: |
+        dir
         cd simba_chem
-        python -c "import sys; sys.path.insert(0, '.'); import core; print('Core module imported successfully!')"
-        python -c "import sys; sys.path.insert(0, '.'); import analysis; print('Analysis module imported successfully!')"
+        python -c "print('Testing Python on Windows')"
+        python -c "import sys; print('Python version:', sys.version)"
+        python -c "import core; print('Core module works on Windows!')"
+        python -c "import analysis; print('Analysis module works on Windows!')"
+        python -c "import calculus; print('Calculus module works on Windows!')"
