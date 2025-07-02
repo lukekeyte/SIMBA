@@ -1,0 +1,45 @@
+#############################################################################
+# LukeNet Input File                                                        #
+#                                                                           #
+# Physical Parameters:                                                      #
+# - Gas Properties:                                                         #
+#    n_gas: Gas number density (cm^-3)                                      #
+#    t_gas: Gas temperature (K)                                             #
+#    gtd: Gas-to-dust ratio                                                 #
+#    h2_col: H2 column density (cm^-2)                                      #
+#                                                                           #
+# - Dust Properties:                                                        #
+#    n_dust: Dust number density (cm^-3)                                    #
+#    t_dust: Dust temperature (K)                                           #
+#                                                                           #
+# - Radiation Field:                                                        #
+#    Av: Visual extinction (mag)                                            #
+#    G_0: Local FUV field strength                                          #
+#     (normalised to Draine field ~2.7e-3 erg/s/cm^2 between 911-2067A)     #
+#    Zeta_X: X-ray ionization rate (s^-1)                                   #
+#    Zeta_CR: Cosmic ray ionization rate (s^-1)                             #
+#                                                                           #
+# - Chemistry Settings:                                                     #
+#    pah_ism: PAH abundance relative to ISM                                 #
+#    t_chem: Chemical evolution time (years)                                #
+#    self_shielding: Enable self-shielding (H2, N2, CO, C)                  #
+#    column: User-specified H2 column for self-shielding                    #
+#        (otherwise approximate based on Av)                                #
+#    network: Full path to chemical network file (str)                      #
+#############################################################################
+
+n_gas     = 4.6780000000e+09
+n_dust    = 9.8240000000e+06
+t_gas     = 56.4
+t_dust    = 56.4
+gtd       = 4.7618078176e+02
+Av        = 1.1930000000e+01
+G_0       = 2.6390000000e-11
+Zeta_X    = 6.6870000000e-16
+h2_col    = 6.3010000000e+22
+Zeta_CR        = 5e-17
+self_shielding = True
+column         = True
+pah_ism        = 0.1
+t_chem         = 1e6
+network        = '/Users/luke/Documents/QMUL/Projects/lukenet/lukenet_dataclasses/benchmark/uvcross_off/benchmark_setup_tdisk_135/data_chemnet4.dat'
