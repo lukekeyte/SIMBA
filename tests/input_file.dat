@@ -42,4 +42,4 @@ self_shielding = True
 column         = True
 pah_ism        = 0.1
 t_chem         = 1e6
-network        = '/Users/luke/Documents/QMUL/Projects/lukenet/lukenet_dataclasses/benchmark/uvcross_off/benchmark_setup_tdisk_135/data_chemnet4.dat'
+network        = 'tests/chemnet_example_keyte2023.dat'
