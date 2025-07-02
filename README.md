@@ -16,12 +16,10 @@ SIMBA is a comprehensive solver for chemical reaction networks in astrophysical 
 
 ## Installation
 
-You can install SIMBA directly from the source:
+You can install SIMBA using pip:
 
 ```bash
-git clone https://github.com/yourusername/simba.git
-cd simba
-pip install -e .
+pip install simba_chem
 ```
 
 ## Quick Start
@@ -34,6 +32,14 @@ import simba_chem as simba
 simba.create_input('my_input.dat')
 ```
 
+You will also need to have a correctly formatted chemical network file available. A template can be generated using:
+```python
+simba.create_network("directory/to/save/network/") 
+```
+
+Don't forget to specify the path to the chemical network file in your input file!
+
+
 2. Modify the input parameters in `my_input.py` according to your needs
 
 3. Run your simulation:
@@ -45,6 +51,10 @@ network.init_simba('my_input.dat')
 # Solve the network
 result = network.solve_network()
 ```
+
+
+
+
 
 ## Dependencies
 
