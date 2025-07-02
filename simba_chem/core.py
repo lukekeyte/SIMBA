@@ -35,6 +35,7 @@ import platform
 import logging
 import sys
 import os
+os.environ['PYTHONIOENCODING'] = 'utf-8'
 from . import helpers
 from . import model_classes
 from . import calculus
