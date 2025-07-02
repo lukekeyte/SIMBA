@@ -25,6 +25,7 @@ import numpy as np
 import logging
 import os
 import shutil
+import platform
 try:
     # Python 3.9+
     from importlib.resources import files
@@ -564,9 +565,44 @@ def create_network(output_dir):
 
 
 #####################
-# SAVE EXPONENTIALS #
+# SAFE EXPONENTIALS #
 #####################
 
 def safe_exp(value):
     """Safely compute exponential, clipping to prevent underflow/overflow."""
     return np.exp(np.clip(value, -700.0, 700.0))
+
+
+################
+# SAFE UNICODE #
+################
+
+def safe_unicode(text):
+    """Replace Unicode characters with ASCII equivalents on Windows"""
+    if platform.system() == 'Windows':
+        # Replace fancy Unicode with ASCII equivalents
+        replacements = {
+            '┏': '+',
+            '┓': '+', 
+            '┗': '+',
+            '┛': '+',
+            '┃': '|',
+            '━': '-',
+            '▓': '#',
+            '◆': '*',
+            '►': '>',
+            '┻': '+',
+            '┳': '+',
+            '┣': '+',
+            '┫': '+',
+            '╋': '+',
+            '║': '|',
+            '═': '=',
+            '╔': '+',
+            '╗': '+',
+            '╚': '+',
+            '╝': '+',
+        }
+        for unicode_char, ascii_char in replacements.items():
+            text = text.replace(unicode_char, ascii_char)
+    return text

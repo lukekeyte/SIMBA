@@ -76,7 +76,17 @@ class Simba:
             # Set level based on verbosity_level parameter
             level = getattr(logging, self.parameters.verbosity_level)
             console_handler.setLevel(level)
-            console_format = logging.Formatter('%(message)s')
+            
+            # Windows-safe formatter
+            if platform.system() == 'Windows':
+                class WindowsFormatter(logging.Formatter):
+                    def format(self, record):
+                        formatted = super().format(record)
+                        return helpers.safe_unicode(formatted)
+                console_format = WindowsFormatter('%(message)s')
+            else:
+                console_format = logging.Formatter('%(message)s')
+                
             console_handler.setFormatter(console_format)
             logger.addHandler(console_handler)
         
@@ -89,8 +99,11 @@ class Simba:
             logger.addHandler(file_handler)
 
 
+    #############
+    # Verbosity #
+    #############
+    
     def set_verbosity(self, verbose=True, level="INFO"):
-
         logger = logging.getLogger()
         
         # Update parameters
@@ -107,7 +120,17 @@ class Simba:
             console_handler = logging.StreamHandler()
             log_level = getattr(logging, level)
             console_handler.setLevel(log_level)
-            console_format = logging.Formatter('%(message)s')
+            
+            # Windows-safe formatter
+            if platform.system() == 'Windows':
+                class WindowsFormatter(logging.Formatter):
+                    def format(self, record):
+                        formatted = super().format(record)
+                        return helpers.safe_unicode(formatted)
+                console_format = WindowsFormatter('%(message)s')
+            else:
+                console_format = logging.Formatter('%(message)s')
+                
             console_handler.setFormatter(console_format)
             logger.addHandler(console_handler)
 
