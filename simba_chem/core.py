@@ -42,19 +42,54 @@ from . import self_shielding as ss
 from .data import CO_SELFSHIELDING_FILE, N2_SELFSHIELDING_FILE
 from .helpers import safe_exp
 
+def setup_windows_console():
+    """
+    Simple function to enable UTF-8 support on Windows console.
+    Call this once at the start of your program.
+    """
+    if platform.system() == 'Windows':
+        try:
+            # Try to enable UTF-8 mode for Windows console
+            os.system('chcp 65001 > nul')
+            # Set stdout/stderr encoding to utf-8
+            if hasattr(sys.stdout, 'reconfigure'):
+                sys.stdout.reconfigure(encoding='utf-8')
+                sys.stderr.reconfigure(encoding='utf-8')
+        except:
+            # If anything fails, just continue - the error handler will catch issues
+            pass
 
-# Force all output to ignore Unicode errors on Windows
-if platform.system() == 'Windows':
-    # Redirect stdout and stderr to ignore encoding errors
-    sys.stdout = open(sys.stdout.fileno(), 'w', encoding='utf-8', errors='replace')
-    sys.stderr = open(sys.stderr.fileno(), 'w', encoding='utf-8', errors='replace')
-    
-    # Also set environment variables
-    os.environ['PYTHONIOENCODING'] = 'utf-8:replace'
+class SafeConsoleHandler(logging.StreamHandler):
+    """
+    Custom logging handler that gracefully handles Unicode encoding errors.
+    Falls back to ASCII representation when Unicode fails.
+    """
+    def emit(self, record):
+        try:
+            # Try normal logging first
+            super().emit(record)
+        except UnicodeEncodeError:
+            # If Unicode fails, convert the message to ASCII and try again
+            try:
+                # Get the formatted message
+                msg = self.format(record)
+                # Convert Unicode to ASCII equivalents
+                ascii_msg = msg.encode('ascii', 'replace').decode('ascii')
+                # Create a new record with the ASCII message
+                ascii_record = logging.LogRecord(
+                    record.name, record.levelno, record.pathname, record.lineno,
+                    ascii_msg, record.args, record.exc_info, record.funcName, record.stack_info
+                )
+                # Emit the ASCII version
+                logging.StreamHandler.emit(self, ascii_record)
+            except:
+                # Ultimate fallback - just print a simple message
+                print(f"[{record.levelname}] Unicode encoding error in log message")
 
-    
 class Simba:
     def __init__(self):
+
+        setup_windows_console()
  
         self.elements = model_classes.Elements()
         self.species = model_classes.Species()
@@ -82,7 +117,8 @@ class Simba:
         
         # Create console handler - only active if verbose is True
         if self.parameters.verbose:
-            console_handler = logging.StreamHandler()
+            console_handler = SafeConsoleHandler()
+            # Set level based on verbosity_level parameter
             level = getattr(logging, self.parameters.verbosity_level)
             console_handler.setLevel(level)
             console_format = logging.Formatter('%(message)s')
@@ -97,11 +133,9 @@ class Simba:
             file_handler.setFormatter(file_format)
             logger.addHandler(file_handler)
 
-    #############
-    # Verbosity #
-    #############
-    
+
     def set_verbosity(self, verbose=True, level="INFO"):
+
         logger = logging.getLogger()
         
         # Update parameters
