@@ -41,28 +41,8 @@ from . import calculus
 from . import self_shielding as ss
 from .data import CO_SELFSHIELDING_FILE, N2_SELFSHIELDING_FILE
 from .helpers import safe_exp
+from .helpers import safe_log
 
-
-
-def safe_log(message):
-    """Safe logging that never fails on Windows"""
-    if platform.system() == 'Windows':
-        # On Windows, always convert to ASCII first to avoid encoding issues
-        try:
-            safe_message = message.encode('ascii', 'replace').decode('ascii')
-            print(safe_message)
-        except:
-            # Ultimate fallback
-            print("[LOG] Message with encoding issues")
-    else:
-        # On Mac/Linux, use normal logging for beautiful Unicode output
-        try:
-            import logging
-            logging.info(message)
-        except:
-            print(message)
-
-        
 
 class Simba:
     def __init__(self):
