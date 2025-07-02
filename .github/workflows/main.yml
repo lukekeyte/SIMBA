@@ -18,12 +18,15 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy matplotlib scipy pandas tqdm
+        
     - name: Test SIMBA on Windows
       run: |
-        dir
         cd simba_chem
-        python -c "print('Testing Python on Windows')"
-        python -c "import sys; print('Python version:', sys.version)"
-        python -c "import core; print('Core module works on Windows!')"
-        python -c "import analysis; print('Analysis module works on Windows!')"
-        python -c "import calculus; print('Calculus module works on Windows!')"
+        python -c "import core; print('✅ Core module works on Windows!')"
+        python -c "import analysis; print('✅ Analysis module works on Windows!')"
+        python -c "import calculus; print('✅ Calculus module works on Windows!')"
+        python -c "import helpers; print('✅ Helpers module works on Windows!')"
