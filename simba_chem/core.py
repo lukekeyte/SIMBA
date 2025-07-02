@@ -43,6 +43,16 @@ from .data import CO_SELFSHIELDING_FILE, N2_SELFSHIELDING_FILE
 from .helpers import safe_exp
 
 
+# Force all output to ignore Unicode errors on Windows
+if platform.system() == 'Windows':
+    # Redirect stdout and stderr to ignore encoding errors
+    sys.stdout = open(sys.stdout.fileno(), 'w', encoding='utf-8', errors='replace')
+    sys.stderr = open(sys.stderr.fileno(), 'w', encoding='utf-8', errors='replace')
+    
+    # Also set environment variables
+    os.environ['PYTHONIOENCODING'] = 'utf-8:replace'
+
+    
 class Simba:
     def __init__(self):
  
@@ -72,45 +82,7 @@ class Simba:
         
         # Create console handler - only active if verbose is True
         if self.parameters.verbose:
-            # Create a custom handler that can handle Unicode on Windows
-            if platform.system() == 'Windows':
-                import sys
-                
-                class WindowsUnicodeHandler(logging.StreamHandler):
-                    def __init__(self):
-                        super().__init__()
-                        # Try to reconfigure stdout to use UTF-8
-                        try:
-                            import io
-                            self.stream = io.TextIOWrapper(
-                                sys.stdout.buffer, 
-                                encoding='utf-8', 
-                                errors='replace'
-                            )
-                        except:
-                            # Fallback: if that fails, use error replacement
-                            self.stream = sys.stdout
-                    
-                    def emit(self, record):
-                        try:
-                            super().emit(record)
-                        except UnicodeEncodeError:
-                            # If Unicode fails, replace problematic characters and try again
-                            try:
-                                msg = self.format(record)
-                                # Replace only the most problematic characters, keep most Unicode
-                                safe_msg = (msg.replace('┏', '+').replace('┓', '+').replace('┗', '+').replace('┛', '+')
-                                             .replace('┃', '|').replace('━', '-').replace('▓', '#')
-                                             .replace('◆', '*').replace('►', '>'))
-                                print(safe_msg)
-                            except:
-                                print("(Display formatting skipped due to encoding)")
-                
-                console_handler = WindowsUnicodeHandler()
-            else:
-                console_handler = logging.StreamHandler()
-            
-            # Set level based on verbosity_level parameter
+            console_handler = logging.StreamHandler()
             level = getattr(logging, self.parameters.verbosity_level)
             console_handler.setLevel(level)
             console_format = logging.Formatter('%(message)s')
@@ -124,7 +96,6 @@ class Simba:
             file_format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
             file_handler.setFormatter(file_format)
             logger.addHandler(file_handler)
-
 
     #############
     # Verbosity #
@@ -144,40 +115,7 @@ class Simba:
         
         # Add new console handler if verbose
         if verbose:
-            # Use the same Windows-safe handler as in __init__
-            if platform.system() == 'Windows':
-                import sys
-                
-                class WindowsUnicodeHandler(logging.StreamHandler):
-                    def __init__(self):
-                        super().__init__()
-                        try:
-                            import io
-                            self.stream = io.TextIOWrapper(
-                                sys.stdout.buffer, 
-                                encoding='utf-8', 
-                                errors='replace'
-                            )
-                        except:
-                            self.stream = sys.stdout
-                    
-                    def emit(self, record):
-                        try:
-                            super().emit(record)
-                        except UnicodeEncodeError:
-                            try:
-                                msg = self.format(record)
-                                safe_msg = (msg.replace('┏', '+').replace('┓', '+').replace('┗', '+').replace('┛', '+')
-                                             .replace('┃', '|').replace('━', '-').replace('▓', '#')
-                                             .replace('◆', '*').replace('►', '>'))
-                                print(safe_msg)
-                            except:
-                                print("(Display formatting skipped due to encoding)")
-                
-                console_handler = WindowsUnicodeHandler()
-            else:
-                console_handler = logging.StreamHandler()
-                
+            console_handler = logging.StreamHandler()
             log_level = getattr(logging, level)
             console_handler.setLevel(log_level)
             console_format = logging.Formatter('%(message)s')
