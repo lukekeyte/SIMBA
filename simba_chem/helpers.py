@@ -599,38 +599,3 @@ def create_network(output_dir):
 def safe_exp(value):
     """Safely compute exponential, clipping to prevent underflow/overflow."""
     return np.exp(np.clip(value, -700.0, 700.0))
-
-
-################
-# SAFE UNICODE #
-################
-
-def safe_unicode(text):
-    """Replace Unicode characters with ASCII equivalents on Windows"""
-    if platform.system() == 'Windows':
-        # Replace fancy Unicode with ASCII equivalents
-        replacements = {
-            '┏': '+',
-            '┓': '+', 
-            '┗': '+',
-            '┛': '+',
-            '┃': '|',
-            '━': '-',
-            '▓': '#',
-            '◆': '*',
-            '►': '>',
-            '┻': '+',
-            '┳': '+',
-            '┣': '+',
-            '┫': '+',
-            '╋': '+',
-            '║': '|',
-            '═': '=',
-            '╔': '+',
-            '╗': '+',
-            '╚': '+',
-            '╝': '+',
-        }
-        for unicode_char, ascii_char in replacements.items():
-            text = text.replace(unicode_char, ascii_char)
-    return text
