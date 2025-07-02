@@ -31,6 +31,7 @@ from tqdm.auto import tqdm
 import signal
 import time
 from contextlib import contextmanager
+import platform
 import logging
 import sys
 import os
@@ -701,22 +702,26 @@ class Simba:
         Uses a timeout to prevent solver from running too long.
         """
         
-        # Define timeout context manager
         @contextmanager
         def timeout_handler(seconds):
-            def handle_timeout(signum, frame):
-                raise TimeoutError(f"Integration timed out after {seconds} seconds")
-                
-            # Set the timeout handler
-            original_handler = signal.signal(signal.SIGALRM, handle_timeout)
-            signal.alarm(seconds)
-            
-            try:
+            if platform.system() == 'Windows':
+                # On Windows, skip timeout entirely
                 yield
-            finally:
-                # Restore original handler and cancel alarm
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, original_handler)
+            else:
+                # On Mac/Linux, use original signal-based timeout
+                def handle_timeout(signum, frame):
+                    raise TimeoutError(f"Integration timed out after {seconds} seconds")
+                    
+                # Set the timeout handler
+                original_handler = signal.signal(signal.SIGALRM, handle_timeout)
+                signal.alarm(seconds)
+                
+                try:
+                    yield
+                finally:
+                    # Restore original handler and cancel alarm
+                    signal.alarm(0)
+                    signal.signal(signal.SIGALRM, original_handler)
         
         # Setup initial conditions with explicit float64 precision
         t0  = np.float64(self.parameters.time_initial)
