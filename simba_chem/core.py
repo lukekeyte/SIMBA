@@ -96,7 +96,7 @@ class Simba:
         # Optionally create file handler if user wants logs saved
         if self.parameters.save_logs:
             file_handler = logging.FileHandler('simba.log')
-            file_handler.setLevel(safe_log)  # Could make this configurable too
+            file_handler.setLevel(logging.INFO)  # Could make this configurable too
             file_format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
             file_handler.setFormatter(file_format)
             logger.addHandler(file_handler)
