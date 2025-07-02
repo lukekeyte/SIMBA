@@ -32,12 +32,12 @@ import simba_chem as simba
 simba.create_input('my_input.dat')
 ```
 
-&nbsp;&nbsp;&nbsp;&nbsp; You will also need to have a correctly formatted chemical network file available. A template can be generated using:
+You will also need to have a correctly formatted chemical network file available. A template can be generated using:
 ```python
 simba.create_network("directory/to/save/network/") 
 ```
 
-&nbsp;&nbsp;&nbsp;&nbsp; Don't forget to specify the path to the chemical network file in your input file!
+Don't forget to specify the path to the chemical network file in your input file!
 
 
 2. Modify the input parameters in `my_input.py` according to your needs
