@@ -34,6 +34,19 @@ except ImportError:
     from importlib_resources import files
 
 
+def safe_log(message):
+    """Safe logging that never fails on Windows"""
+    if platform.system() == 'Windows':
+        # On Windows, convert to ASCII and just print
+        safe_message = message.encode('ascii', 'replace').decode('ascii')
+        print(safe_message)
+    else:
+        # On Mac/Linux, use normal logging for beautiful Unicode
+        import logging
+        logging.info(message)
+
+
+
 ###################
 # READ INPUT FILE #
 ###################
@@ -242,16 +255,16 @@ def create_reaction_labels(n_reactions, educts, products):
 ##########################
 
 def log_section(title):
-    logging.info("▓" * 24 + title.upper().center(22) + "▓" * 24 +"\n")
+    safe_log("▓" * 24 + title.upper().center(22) + "▓" * 24 +"\n")
 
 
 def log_param(name, value, unit=""):
     name_pad  = 25  
     value_pad = 15 
     if unit:
-        logging.info(f"{name:<{name_pad}}{value:>{value_pad}} {unit}")
+        safe_log(f"{name:<{name_pad}}{value:>{value_pad}} {unit}")
     else:
-        logging.info(f"{name:<{name_pad}}{value:>{value_pad}}")
+        safe_log(f"{name:<{name_pad}}{value:>{value_pad}}")
 
 def format_scientific(number):
     """Format a number in scientific notation with proper symbols."""
@@ -286,14 +299,14 @@ def format_scientific(number):
     
 def log_table_header(title):
     """Log a table section header."""
-    logging.info(f" {title}")
-    logging.info(" ┌────────────────────┬───────────────┬──────────┐")
-    logging.info(" │ Parameter          │ Value         │ Unit     │")
-    logging.info(" ├────────────────────┼───────────────┼──────────┤")
+    safe_log(f" {title}")
+    safe_log(" ┌────────────────────┬───────────────┬──────────┐")
+    safe_log(" │ Parameter          │ Value         │ Unit     │")
+    safe_log(" ├────────────────────┼───────────────┼──────────┤")
 
 def log_table_footer():
     """Log the table footer."""
-    logging.info(" └────────────────────┴───────────────┴──────────┘\n")
+    safe_log(" └────────────────────┴───────────────┴──────────┘\n")
 
 def log_table_row(parameter, value, unit=""):
     """Format and log a parameter as a table row."""
@@ -309,28 +322,28 @@ def log_table_row(parameter, value, unit=""):
                    .replace("^-3", "⁻³")
                    .replace("^2", "²")
                    .replace("^3", "³"))
-        logging.info(f" │ {parameter:<18} │ {formatted_value:<13} │ {unit:<8} │")
+        safe_log(f" │ {parameter:<18} │ {formatted_value:<13} │ {unit:<8} │")
     else:
-        logging.info(f" │ {parameter:<18} │ {formatted_value:<13} │          │")
+        safe_log(f" │ {parameter:<18} │ {formatted_value:<13} │          │")
 
 def log_table_header_analysis(title, col1, col2):
     """Log a table section header."""
-    logging.info(f" {title}")
-    logging.info(" ┌────────────────────────┬──────────────────────┐")
-    logging.info(f" │ {col1:<12}           │ {col2:<15}      │")
-    logging.info(" ├────────────────────────┼──────────────────────┤")
+    safe_log(f" {title}")
+    safe_log(" ┌────────────────────────┬──────────────────────┐")
+    safe_log(f" │ {col1:<12}           │ {col2:<15}      │")
+    safe_log(" ├────────────────────────┼──────────────────────┤")
 
 def log_table_row_species(species, abundance):
     formatted_value = format_scientific(abundance) if isinstance(abundance, float) else abundance
-    logging.info(f" | {species:<8}               |  {formatted_value:<18}  |")
+    safe_log(f" | {species:<8}               |  {formatted_value:<18}  |")
 
 def log_table_row_reactions(reaction, rate):
     formatted_value = format_scientific(rate) if isinstance(rate, float) else rate
-    logging.info(f" | {reaction:<23}|  {formatted_value:<13}       |")
+    safe_log(f" | {reaction:<23}|  {formatted_value:<13}       |")
 
 def log_table_footer_analysis():
     """Log the table footer."""
-    logging.info(" └────────────────────────┴──────────────────────┘\n")
+    safe_log(" └────────────────────────┴──────────────────────┘\n")
 
 
 ###################
