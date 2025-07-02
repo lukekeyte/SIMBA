@@ -41,9 +41,30 @@ from . import self_shielding as ss
 from .data import CO_SELFSHIELDING_FILE, N2_SELFSHIELDING_FILE
 from .helpers import safe_exp
 
+def fix_unicode_on_windows():
+    """
+    One-line fix for Windows Unicode issues.
+    Call this ONCE at the very beginning of your main script or __init__.
+    """
+    if platform.system() == 'Windows':
+        # Monkey-patch logging to handle Unicode errors gracefully
+        original_emit = logging.StreamHandler.emit
+        
+        def safe_emit(self, record):
+            try:
+                original_emit(self, record)
+            except UnicodeEncodeError:
+                # Convert to ASCII and try again
+                msg = self.format(record)
+                safe_msg = msg.encode('ascii', 'replace').decode('ascii')
+                print(safe_msg, file=getattr(self, 'stream', sys.stderr))
+        
+        logging.StreamHandler.emit = safe_emit
 
 class Simba:
     def __init__(self):
+
+        fix_unicode_on_windows()
  
         self.elements = model_classes.Elements()
         self.species = model_classes.Species()
